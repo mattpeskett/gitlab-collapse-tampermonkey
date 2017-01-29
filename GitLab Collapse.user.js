@@ -31,8 +31,6 @@
 
     var first = true;
     collapseBtn.click(function(){
-        first = false;
-
         var before = "fa-compress";
         var after = "fa-expand";
         var loading = "fa-spinner";
@@ -47,7 +45,10 @@
         collapseBtn.removeClass(before).addClass(loading);
 
         setTimeout(function() {
-            showFilenamesBox();
+            if (first) {
+                first = false;
+                showFilenamesBox();
+            }
 
             var buttons = $('.diff-toggle-caret');
             buttons.each(function() {
@@ -69,21 +70,27 @@
 
 
     var showFilenamesBox = function() {
-        var rows = $(".file-title").find("strong");
-        $(".file-title").find("strong").text();
-        var filenames = [];
+        var rows = $(".file-title").find("a");
+        var filenames = {};
         rows.each(function() {
-            var text = $(this).text().trim();
-            if (text !== "") {
-                filenames.push(text);
+            var strongEle = $(this).find("strong");
+            if (strongEle.length !== 0) {
+                var text = strongEle.text().trim();
+                if (text !== "") {
+                    var link = $(this).attr("href");
+                    if (link.startsWith("#")) {
+                        filenames[text] = link;
+                    }
+                }
             }
         });
-        filenames = unique(filenames.sort());
+        var keys = Object.keys(filenames);
+        keys = unique(keys.sort());
 
         var files = '<div class="mr-state-widget">';
         files += '  <ul>';
-        $(filenames).each(function() {
-            files += '    <li>' + this + '</li>';
+        $(keys).each(function() {
+            files += '    <li><a href="' + filenames[this] + '">' + this + '</a></li>';
         });
         files += '  </ul>';
         files += '</div>';
