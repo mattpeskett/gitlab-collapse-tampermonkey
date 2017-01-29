@@ -29,7 +29,10 @@
     $(buttonHtml2).appendTo(parent);
     var collapseBtn = $("#collapse-all-button");
 
+    var first = true;
     collapseBtn.click(function(){
+        first = false;
+
         var before = "fa-compress";
         var after = "fa-expand";
         var loading = "fa-spinner";
@@ -44,6 +47,8 @@
         collapseBtn.removeClass(before).addClass(loading);
 
         setTimeout(function() {
+            showFilenamesBox();
+
             var buttons = $('.diff-toggle-caret');
             buttons.each(function() {
                 if(collapsing) {
@@ -61,4 +66,34 @@
         }, 1);
 
     });
+
+
+    var showFilenamesBox = function() {
+        var rows = $(".file-title").find("strong");
+        $(".file-title").find("strong").text();
+        var filenames = [];
+        rows.each(function() {
+            var text = $(this).text().trim();
+            if (text !== "") {
+                filenames.push(text);
+            }
+        });
+        filenames = unique(filenames.sort());
+
+        var files = '<div class="mr-state-widget">';
+        files += '  <ul>';
+        $(filenames).each(function() {
+            files += '    <li>' + this + '</li>';
+        });
+        files += '  </ul>';
+        files += '</div>';
+        $(files).insertAfter($(".emoji-list-container"));
+    };
+
+    function unique(array){
+        return array.filter(function(el, index, arr) {
+            return index === arr.indexOf(el);
+        });
+    }
+
 })();
