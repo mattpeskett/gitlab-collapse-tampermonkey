@@ -2,9 +2,10 @@
 // @name         GitLab Collapse
 // @namespace    http://muhammmada.li
 // @version      0.1
-// @description  collapse all gitlab files in diff view
+// @description  collapse all gitlab files in diff view and commit view
 // @author       Muhammad Ali
 // @match        https://git.sauniverse.com/*/merge_requests*
+// @match        https://git.sauniverse.com/*/commit*
 // @grant        none
 // #@require http://code.jquery.com/jquery-latest.js
 // ==/UserScript==
@@ -24,7 +25,9 @@
     var buttonHtml2 = '<i id="collapse-all-button" class="fa fa-compress award-control-icon-normal"></i>';
 
     var parent = $(".awards")[0];
-    //var parent = $(".commit-stat-summary");
+    if (parent === undefined) {
+        parent = $(".commit-stat-summary");
+    }
 
     $(buttonHtml2).appendTo(parent);
     var collapseBtn = $("#collapse-all-button");
