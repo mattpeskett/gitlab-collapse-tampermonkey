@@ -2,7 +2,7 @@
 // @name         GitLab Collapse
 // @namespace    http://muhammmada.li
 // @version      0.1
-// @description  collapse all gitlab files in diff view and commit view
+// @description  collapse all gitlab files in diff view
 // @author       Muhammad Ali
 // @match        https://git.sauniverse.com/*/merge_requests*
 // @match        https://git.sauniverse.com/*/commit*
@@ -26,7 +26,7 @@
 
     var parent = $(".awards")[0];
     if (parent === undefined) {
-        parent = $(".commit-stat-summary");
+        parent = $(".commit-stat-summary")[0];
     }
 
     $(buttonHtml2).appendTo(parent);
@@ -97,7 +97,12 @@
         });
         files += '  </ul>';
         files += '</div>';
-        $(files).insertAfter($(".emoji-list-container"));
+
+        var parent = $(".emoji-list-container")[0];
+        if (parent === undefined) {
+            parent = $(".commit-stat-summary")[0];
+        }
+        $(files).insertAfter(parent);
     };
 
     function unique(array){
