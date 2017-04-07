@@ -8,6 +8,7 @@
 // @match        https://git.sauniverse.com/*/commit*
 // @grant        none
 // #@require http://code.jquery.com/jquery-latest.js
+// #@require CollapsibleLists.js
 // ==/UserScript==
 
 (function() {
@@ -72,6 +73,32 @@
     });
 
 
+    var getFilenameGrouping = function(filePaths) {
+        var bucket = {};
+        var roots = [];
+
+        for (var i = 0; i < filePaths.length; i++) {
+            var items = filePaths[i].split("/");
+
+            // TODO: handle case where items.length === 1
+            for (var j = 0; j < items.length - 1; j++) {
+                var currentItem = items[j];
+                var nextItem = items[j + 1];
+                if (j === 0) {
+                    roots.push(currentItem);
+                }
+                if (currentItem in bucket) {
+                    bucket[currentItem].push(nextItem);
+                } else {
+                    bucket[currentItem] = [nextItem];
+                }
+                bucket[currentItem] = unique(bucket[currentItem].sort());
+            }
+        }
+        roots = unique(roots.sort());
+        return {"roots": roots, "bucket" : bucket};
+    };
+
     var showFilenamesBox = function() {
         var rows = $(".file-title").find("a");
         var filenames = {};
@@ -90,12 +117,23 @@
         var keys = Object.keys(filenames);
         keys = unique(keys.sort());
 
+        var groups = getFilenameGrouping(keys);
+
+        var concat = function(roots, bucket) {
+            var htmlBuilder = '  <ul>';
+            $(roots).each(function() {
+//                htmlBuilder += '    <li><a href="' + bucket[this] + '">' + this + '</a></li>';
+                htmlBuilder += '    <li>' + this + '</li>';
+                if (this in bucket) {
+                    htmlBuilder += concat(bucket[this], bucket);
+                }
+            });
+            htmlBuilder += '  </ul>';
+            return htmlBuilder;
+        };
+
         var files = '<div class="mr-state-widget">';
-        files += '  <ul>';
-        $(keys).each(function() {
-            files += '    <li><a href="' + filenames[this] + '">' + this + '</a></li>';
-        });
-        files += '  </ul>';
+        files += concat(groups.roots, groups.bucket);
         files += '</div>';
 
         var parent = $(".emoji-list-container")[0];
