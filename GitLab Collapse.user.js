@@ -7,8 +7,10 @@
 // @match        https://git.sauniverse.com/*/merge_requests*
 // @match        https://git.sauniverse.com/*/commit*
 // @grant        none
-// #@require http://code.jquery.com/jquery-latest.js
-// #@require CollapsibleLists.js
+// #@require     http://code.jquery.com/jquery-latest.js
+// #@require     https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js
+// #@require     https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css
+// #@require     easyjstree.js
 // ==/UserScript==
 
 (function() {
@@ -120,20 +122,22 @@
         var groups = getFilenameGrouping(keys);
 
         var concat = function(roots, bucket) {
-            var htmlBuilder = '  <ul>';
+            var htmlBuilder = '    <ul>';
             $(roots).each(function() {
-//                htmlBuilder += '    <li><a href="' + bucket[this] + '">' + this + '</a></li>';
-                htmlBuilder += '    <li>' + this + '</li>';
+//                htmlBuilder += '      <li><a href="' + bucket[this] + '">' + this + '</a></li>';
+                htmlBuilder += '      <li>' + this + '</li>';
                 if (this in bucket) {
                     htmlBuilder += concat(bucket[this], bucket);
                 }
             });
-            htmlBuilder += '  </ul>';
+            htmlBuilder += '    </ul>';
             return htmlBuilder;
         };
 
         var files = '<div class="mr-state-widget">';
+        files += '  <div class="ui list">';
         files += concat(groups.roots, groups.bucket);
+        files += '  </div>';
         files += '</div>';
 
         var parent = $(".emoji-list-container")[0];
